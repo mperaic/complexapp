@@ -64,8 +64,7 @@ User.prototype.register = function() {
     // step 1 - validate user data
     this.cleanUp()
     this.validate()
-    // step 2 - only if there are no 
-    // validation errors
+    // step 2 - only if there are no validation errors
     // then save the user data into a database
 }
 
