@@ -8,15 +8,15 @@ let User = function(data) {
 
 User.prototype.cleanUp = function() {
     if (typeof(this.data.username) != "string") {
-        thid.data.username = ""
+        this.data.username = ""
     }
 
     if (typeof(this.data.email) != "string") {
-        thid.data.email = ""
+        this.data.email = ""
     }
 
     if (typeof(this.data.password) != "string") {
-        thid.data.password = ""
+        this.data.password = ""
     }
 
     // get rid of any bogus properties
@@ -59,6 +59,18 @@ User.prototype.validate = function() {
     if (this.data.username.length > 30) {
         this.errors.push("Username cannot exceed 30 chars.")
     }
+}
+
+User.prototype.login = function() {
+    this.cleanUp()
+    usersCollection.findOne({username: this.data.username}, (err, attemptedUser) => {
+        if (attemptedUser && attemptedUser.password ==
+            this.data.password) {
+            console.log("Congrats!")
+        } else {
+            console.log("Invalid username/password.")
+        }
+    })
 }
 
 User.prototype.register = function() {
