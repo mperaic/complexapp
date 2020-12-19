@@ -3,23 +3,17 @@ const usersCollection = require("../db").db().collection("users")
 const validator = require("validator")
 const md5 = require("md5")
 
-let User = function(data) {
+let User = function(data, getAvatar) {
     this.data = data   
     this.errors = [] 
+    if (getAvatar == undefined) {getAvatar = false}    
+    if (getAvatar) {this.getAvatar()}
 }
 
 User.prototype.cleanUp = function() {
-    if (typeof(this.data.username) != "string") {
-        this.data.username = ""
-    }
-
-    if (typeof(this.data.email) != "string") {
-        this.data.email = ""
-    }
-
-    if (typeof(this.data.password) != "string") {
-        this.data.password = ""
-    }
+    if (typeof(this.data.username) != "string") {this.data.username = ""}
+    if (typeof(this.data.email) != "string") {this.data.email = ""}
+    if (typeof(this.data.password) != "string") {this.data.password = ""}
 
     // get rid of any bogus properties
     this.data = {
