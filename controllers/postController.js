@@ -41,7 +41,7 @@ exports.edit = function(req, res) {
             // post was updated in db
             req.flash("success", "Post is updated!")
             req.session.save(function() {
-                res.redirect(`post/${req.params.id}/edit`)
+                res.redirect(`/post/${req.params.id}/edit`)
             })
         } else {
             post.errors.forEach(function(error) {
@@ -51,8 +51,7 @@ exports.edit = function(req, res) {
                 res.redirect(`/post/${req.params.id}/edit`)
             })
         }
-    }
-    ).catch(() => {
+    }).catch(() => {
         // a post with the requested id does not exist
         // or if the current visitor is not the owner of 
         // the requested post
