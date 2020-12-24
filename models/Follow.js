@@ -14,7 +14,7 @@ Follow.prototype.cleanUp = function() {
     }
 }
 
-Follow.prototype.validate = async function() {
+Follow.prototype.validate = async function(action) {
     // followedUsername must exist in db
     let followedAccount = await usersCollection.findOne({username: this.followedUsername})
     if (followedAccount) {
@@ -22,12 +22,31 @@ Follow.prototype.validate = async function() {
     } else {
         this.errors.push("You cannot follow a non-existing user.")
     }
+
+    let doesFollowAlreadyExist = await followsCollection.findOne({followedId: this.followedId, authorId: new ObjectID(this.authorId)})
+
+    if (action == "create") {
+        if (doesFollowAlreadyExist) {
+            this.errors.push("Yu already follow them.")
+        }
+    }
+
+    if (action == "deletete") {
+        if (!doesFollowAlreadyExist) {
+            this.errors.push("You cannot unfollow if you already do not follow them.")
+        }
+    }
+
+    // should not be able to follow yourself
+    if (this.followedId.equals(this.authorId)) {
+        this.errors.push("You cannot follow yourself.")
+    }
 }
 
 Follow.prototype.create = function() {
     return new Promise(async (resolve, reject) => {
         this.cleanUp()
-        await this.validate()
+        await this.validate("create")
         if (!this.errors.length) {
             await followsCollection.insertOne({followedId: this.followedId, authorId: new ObjectID(this.authorId)})
             resolve()
@@ -36,6 +55,20 @@ Follow.prototype.create = function() {
         }
     })
 }
+
+Follow.prototype.delete = function() {
+    return new Promise(async (resolve, reject) => {
+        this.cleanUp()
+        await this.validate("delete")
+        if (!this.errors.length) {
+            await followsCollection.deleteOne({followedId: this.followedId, authorId: new ObjectID(this.authorId)})
+            resolve()
+        } else {
+            reject(this.errors)
+        }
+    })
+}
+
 
 Follow.isVisitorFollowing = async function(followedId, visitorId) {
     let followDoc = await followsCollection.findOne({followedId: followedId, authorId: new ObjectID(visitorId)})
