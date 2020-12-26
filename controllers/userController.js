@@ -36,7 +36,6 @@ exports.mustBeLoggedIn = function(req, res, next) {
     }
 }
 
-
 exports.login = function(req, res) {
     let user = new User(req.body)
     user.login().then(function(result) {
@@ -55,8 +54,7 @@ exports.login = function(req, res) {
 exports.logout = function(req, res) {
     req.session.destroy(function () {
         res.redirect("/")
-    })
-    
+    })    
 }
 
 exports.register = function(req, res) {
@@ -73,13 +71,14 @@ exports.register = function(req, res) {
         req.session.save(function() {
             res.redirect("/")
         })
-    })
-    
+    })    
 }
 
-exports.home = function(req, res) {
+exports.home = async function(req, res) {
     if (req.session.user) {
-        res.render("home-dashboard")
+        // fetch feed of posts for current user
+        let posts = await Post.getFeed(req.session.user._id)
+        res.render("home-dashboard", {posts: posts})
     } else { 
         res.render("home-guest", {regErrors: req.flash("regErrors")})
     }
@@ -109,9 +108,7 @@ exports.profilePostsScreen = function(req, res) {
         })
     }).catch(function() {
         res.render("404")
-    })
-
-     
+    })     
 }
 
 exports.profileFollowersScreen = async function(req, res) {
