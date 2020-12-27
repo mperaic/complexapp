@@ -34,6 +34,7 @@ export default class Chat {
         <img class="chat-avatar avatar-tiny" src="${this.avatar}">
       </div>
         `)
+        this.chatLog.scrollTop = this.chatLog.scrollHeight
         this.chatField.value =""
         this.chatField.focus()
     }
@@ -71,6 +72,7 @@ export default class Chat {
         </div></div>
       </div>
       `)
+      this.chatLog.scrollTop = this.chatLog.scrollHeight
     }
 
     injectHTML() {
