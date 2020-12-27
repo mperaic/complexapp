@@ -1,3 +1,4 @@
+import DOMPurify from "dompurify"
 export default class Chat {
     constructor() {
         this.openedYet = false
@@ -24,7 +25,7 @@ export default class Chat {
     // methods
     sendMessageToServer() {
         this.socket.emit("chatMessageFromBrowser", {message: this.chatField.value})
-        this.chatLog.insertAdjacentHTML("beforeend", `
+        this.chatLog.insertAdjacentHTML("beforeend", DOMPurify.sanitize(`
         <div class="chat-self">
         <div class="chat-message">
           <div class="chat-message-inner">
@@ -33,7 +34,7 @@ export default class Chat {
         </div>
         <img class="chat-avatar avatar-tiny" src="${this.avatar}">
       </div>
-        `)
+        `))
         this.chatLog.scrollTop = this.chatLog.scrollHeight
         this.chatField.value =""
         this.chatField.focus()
@@ -64,7 +65,7 @@ export default class Chat {
     }
 
     displayMessageFromServer(data) {
-        this.chatLog.insertAdjacentHTML("beforeend", `
+        this.chatLog.insertAdjacentHTML("beforeend", DOMPurify.sanitize(`
         <div class="chat-other">
         <a href="#"><img class="avatar-tiny" src="${data.avatar}"></a>
         <div class="chat-message"><div class="chat-message-inner">
@@ -72,7 +73,7 @@ export default class Chat {
           ${data.message}
         </div></div>
       </div>
-      `)
+      `))
       this.chatLog.scrollTop = this.chatLog.scrollHeight
     }
 
