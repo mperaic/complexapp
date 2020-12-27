@@ -55,7 +55,9 @@ export default class RegistrationForm {
     }
 
     usernameAfterDelay() {
-        
+        if (this.username.value.length < 3) {
+            this.showValidationError(this.username, "Username - min 3 chars!")
+        }
     }
 
     insertValidationElements() {
