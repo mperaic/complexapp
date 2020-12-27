@@ -23,7 +23,35 @@ export default class RegistrationForm {
     }
 
     usernameHandler() {
-        alert("Username handler!")
+        this.username.errors = false
+        this.usernameImmediately()
+        clearTimeout(this.username.timer)
+        this.username.timer = setTimeout(() => this.usernameAfterDelay(), 2000)
+    }
+
+    usernameImmediately() {
+        if (this.username.value != "" && !/^([a-zA-Z0-9]+)$/.test(this.username.value)) {
+            this.showValidationError(this.username, "Username - letters and numbers only!")
+        }
+
+        if (!this.username.errors) {
+            this.hideValidationError(this.username)
+        }
+    }
+
+    hideValidationError(el) {
+        el.nextElementSibling.classList.remove("liveValidateMessage--visible")
+    }
+
+
+    showValidationError(el, message) {
+        el.nextElementSibling.innerHTML = message
+        el.nextElementSibling.classList.add("liveValidateMessage--visible")
+        el.errors = true
+    }
+
+    usernameAfterDelay() {
+        
     }
 
     insertValidationElements() {
