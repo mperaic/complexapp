@@ -34,6 +34,10 @@ export default class RegistrationForm {
             this.showValidationError(this.username, "Username - letters and numbers only!")
         }
 
+        if (this.username.value.length > 30) {
+            this.showValidationError(this.username, "Username - up to 30 chars!")
+        }
+
         if (!this.username.errors) {
             this.hideValidationError(this.username)
         }
