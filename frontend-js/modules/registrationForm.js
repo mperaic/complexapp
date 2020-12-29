@@ -2,17 +2,27 @@ import axios from "axios"
 
 export default class RegistrationForm {
     constructor() {
+        this.form = document.querySelector("#registration-form")
         this.allFields = document.querySelectorAll("#registration-form .form-control")
         this.insertValidationElements()
         this.username = document.querySelector("#username-register")
         this.username.previousValue = ""
         this.email = document.querySelector("#email-register")
         this.email.previousValue =""
+        this.password = document.querySelector("#password-register")
+        this.password.previousValue = ""
+        this.username.isUnique = false
+        this.email.isUnique = false
         this.events()
     }
 
     // events
     events() {
+        this.form.addEventListener("submit", e => {
+            e.preventDefault()
+            this.formSubmitHandler()
+        })
+
         this.username.addEventListener("keyup", () => {
             this.isDifferent(this.username, this.usernameHandler)
         })
@@ -20,9 +30,42 @@ export default class RegistrationForm {
         this.email.addEventListener("keyup", () => {
             this.isDifferent(this.email, this.emailHandler)
         })
+
+        this.password.addEventListener("keyup", () => {
+            this.isDifferent(this.password, this.passwordHandler)
+        })
+
+        this.username.addEventListener("blur", () => {
+            this.isDifferent(this.username, this.usernameHandler)
+        })
+
+        this.email.addEventListener("blur", () => {
+            this.isDifferent(this.email, this.emailHandler)
+        })
+
+        this.password.addEventListener("blur", () => {
+            this.isDifferent(this.password, this.passwordHandler)
+        })
     }
 
     // methods
+    formSubmitHandler() {
+        this.usernameImmediately()
+        this.usernameAfterDelay()
+        this.emailAfterDelay()
+        this.passwordImmediately()
+        this.passwordAfterDelay()
+
+        if (this.username.isUnique && 
+            !this.username.errors && 
+            this.email.isUnique &&
+            !this.email.errors &&
+            !this.password.errors
+            ) {
+            this.form.submit()
+        }
+    }
+
     isDifferent(el, handler) {
         if (el.previousValue != el.value) {
             handler.call(this)
@@ -37,10 +80,33 @@ export default class RegistrationForm {
         this.username.timer = setTimeout(() => this.usernameAfterDelay(), 1000)
     }
 
+    passwordHandler() {
+        this.password.errors = false
+        this.passwordImmediately()
+        clearTimeout(this.password.timer)
+        this.password.timer = setTimeout(() => this.passwordAfterDelay(), 1000)
+    }
+
+    passwordImmediately() {
+        if (this.password.value.length > 50) {
+            this.showValidationError(this.password, "Password up to 50 chars.")
+        }
+
+        if (!this.password.errors) {
+            this.hideValidationError(this.password)
+        }
+    }
+
+    passwordAfterDelay() {
+        if (this.password.value.length < 10) {
+            this.showValidationError(this.password, "Password of minimum 10 chars.")
+        }
+    }
+
     emailHandler() {
         this.email.errors = false
         clearTimeout(this.email.timer)
-        this.username.timer = setTimeout(() => this.emailAfterDelay(), 1000)
+        this.email.timer = setTimeout(() => this.emailAfterDelay(), 800)
     }
 
     emailAfterDelay() {
