@@ -6,6 +6,8 @@ export default class RegistrationForm {
         this.insertValidationElements()
         this.username = document.querySelector("#username-register")
         this.username.previousValue = ""
+        this.email = document.querySelector("#email-register")
+        this.email.previousValue =""
         this.events()
     }
 
@@ -13,6 +15,10 @@ export default class RegistrationForm {
     events() {
         this.username.addEventListener("keyup", () => {
             this.isDifferent(this.username, this.usernameHandler)
+        })
+
+        this.email.addEventListener("keyup", () => {
+            this.isDifferent(this.email, this.emailHandler)
         })
     }
 
@@ -28,13 +34,40 @@ export default class RegistrationForm {
         this.username.errors = false
         this.usernameImmediately()
         clearTimeout(this.username.timer)
-        this.username.timer = setTimeout(() => this.usernameAfterDelay(), 2000)
+        this.username.timer = setTimeout(() => this.usernameAfterDelay(), 1000)
+    }
+
+    emailHandler() {
+        this.email.errors = false
+        clearTimeout(this.email.timer)
+        this.username.timer = setTimeout(() => this.emailAfterDelay(), 1000)
+    }
+
+    emailAfterDelay() {
+        if (!/^\S+@\S+$/.test(this.email.value)) {
+           this.showValidationError(this.email, "Provide a valid email.")
+        }
+
+        if (!this.email.errors) {
+            axios.post("/doesEmailExist", {email: this.email.value}).then((response) => {
+                if (response.data) {
+                    this.email.isUnique = false
+                    this.showValidationError(this.email, "That email is used.")
+                } else {
+                    this.email.isUnique = true
+                    this.hideValidationError(this.email)
+                }
+            }).catch(() => {
+                console.log("Please try again later.")
+            })
+        }
     }
 
     usernameImmediately() {
         if (this.username.value != "" && !/^([a-zA-Z0-9]+)$/.test(this.username.value)) {
             this.showValidationError(this.username, "Username - letters and numbers only!")
         }
+    
 
         if (this.username.value.length > 30) {
             this.showValidationError(this.username, "Username - up to 30 chars!")
@@ -44,6 +77,7 @@ export default class RegistrationForm {
             this.hideValidationError(this.username)
         }
     }
+    
 
     hideValidationError(el) {
         el.nextElementSibling.classList.remove("liveValidateMessage--visible")
