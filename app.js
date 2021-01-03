@@ -50,7 +50,7 @@ app.use(csrf())
 app.use(function(req, res, next) {
     res.locals.csrfToken = req.csrfToken()
     next()
-})
+}) 
 
 app.use("/", router)
 
